@@ -1,56 +1,23 @@
 package ru.ismoilov.calculatorrzd.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class OperatorModel {
-    private String operation;
-    private int a;
-    private int b;
-    private int c;
+
+    private String expression;
 
     public OperatorModel() {
     }
 
-    public OperatorModel(String operation) {
-        this.operation = operation;
+    public OperatorModel(String expression) {
+        this.expression = expression;
     }
 
-    public OperatorModel(int c) {
-        this.c = c;
+    public String getExpression() {
+        return expression;
     }
 
-    public OperatorModel(int a, int b) {
-        this.a = a;
-        this.b = b;
-    }
-
-    public String getOperation() {
-        return operation;
-    }
-
-    public void setOperation(String operation) {
-        this.operation = operation;
-    }
-
-    public int getA() {
-        return a;
-    }
-
-    public void setA(int a) {
-        this.a = a;
-    }
-
-    public int getB() {
-        return b;
-    }
-
-    public void setB(int b) {
-        this.b = b;
-    }
-
-    public int getC() {
-        return c;
-    }
-
-    public void setC(int c) {
-        this.c = c;
+    public void setExpression(String expression) {
+        this.expression = expression;
     }
 }

@@ -2,26 +2,120 @@ package ru.ismoilov.calculatorrzd.service;
 
 import org.springframework.stereotype.Service;
 import ru.ismoilov.calculatorrzd.model.OperatorModel;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class Calc {
-    public int addition(OperatorModel operatorModel) {
-        return operatorModel.getA() + operatorModel.getB();
+    public Double add(String operationModel) {
+        String expression = String.valueOf(operationModel);
 
-    }
-    public int subtraction(OperatorModel operatorModel){
-        return operatorModel.getA()- operatorModel.getB();
-    }
-    public double division(OperatorModel operatorModel){
-        return (double) operatorModel.getA()/operatorModel.getB();
-    }
+        List<String> strList = new ArrayList<>();
+        for (String listElement : expression.trim().split("")) {
+            strList.add(listElement);
+            strList.add("");
+        }
+        strList.remove(strList.size() - 1);
 
-    public int multiply(OperatorModel operatorModel){
-        return  operatorModel.getA()* operatorModel.getB();
-    }
-
-    public double squareRoot(OperatorModel operatorModel){
-        return Math.sqrt(operatorModel.getC());
-    }
+        if (strList.indexOf("(") != -1) {
 
 
+            for (int i = strList.indexOf("(") + 1; i < strList.size() - 1; i++) {
+//
+//              Конструкция 1: первым элиментом, который мы отыскали были вторые "("
+                String recursion = "";
+                if (strList.get(i).equals("(")) {
+                    for (int j = i; j < strList.lastIndexOf(")"); j++) {
+                        recursion += strList.get(j);
+                    }
+                    String test = expression.substring(expression.indexOf("("), expression.lastIndexOf(")") + 1);
+
+                    String testRecursion = String.valueOf(add(recursion));
+                    expression = expression.replace(test, testRecursion);
+                    strList.removeAll(strList);
+                    for (String newElement : expression.trim().split(" ")) {
+                        strList.add(newElement);
+                        strList.add(" ");
+                    }
+                }
+
+                String recursion2 = "";
+                if (strList.get(i).equals(")")) {
+
+                    for (int j = strList.indexOf("(") + 1; j < strList.indexOf(")"); j++) {
+                        recursion2 += strList.get(j);
+                    }
+                    String test2 = expression.substring(expression.indexOf("("), expression.lastIndexOf(")") + 1);
+                    String testRecursion2 = String.valueOf(add(recursion2));
+                    expression = expression.replace(test2, testRecursion2);
+                    for (String newElement : expression.trim().split(" ")) {
+                        strList.add(newElement);
+                        strList.add(" ");
+                    }
+                }
+            }
+        }
+
+        List<String> stringList2 = new ArrayList<>();
+        for (String element : expression.trim().split("")) {
+            stringList2.add(element);
+        }
+
+
+        while (stringList2.size() != 0) {
+
+            Double result = 0d;
+
+
+            if (stringList2.indexOf("/") != -1) {
+                int index = stringList2.indexOf("/");
+                result = Double.valueOf(stringList2.get(index - 1)) / Double.valueOf(stringList2.get(index + 1));
+                stringList2.add(index - 1, String.valueOf(result));
+                stringList2.remove(index + 2);
+                stringList2.remove(index + 1);
+                stringList2.remove(index);
+            } else if (stringList2.indexOf("*") != -1) {
+                int index = stringList2.indexOf("*");
+                result = Double.valueOf(stringList2.get(index - 1)) * Double.valueOf(stringList2.get(index + 1));
+                stringList2.add(index - 1, String.valueOf(result));
+                stringList2.remove(index + 2);
+                stringList2.remove(index + 1);
+                stringList2.remove(index);
+            } else if (stringList2.indexOf("-") != -1) {
+                int index = stringList2.indexOf("-");
+                int lastIndex = stringList2.lastIndexOf("-");
+                if (index == 0) {
+                    result = 0.0 - Double.valueOf(stringList2.get(index + 1));
+                    stringList2.add(0, String.valueOf(result));
+                    stringList2.remove(2);
+                    stringList2.remove(1);
+                } else if ((lastIndex - 2 > 0) && (stringList2.get(lastIndex - 2).equals("-"))) {
+                    result = Double.valueOf(stringList2.get(lastIndex + 1)) + Double.valueOf(stringList2.get(lastIndex - 1));
+                    stringList2.add(lastIndex - 1, String.valueOf(result));
+                    stringList2.remove(lastIndex + 2);
+                    stringList2.remove(lastIndex + 1);
+                    stringList2.remove(lastIndex);
+                } else {
+                    result = Double.valueOf(stringList2.get(index - 1)) - Double.valueOf(stringList2.get(index + 1));
+                    stringList2.add(index - 1, String.valueOf(result));
+                    stringList2.remove(index + 2);
+                    stringList2.remove(index + 1);
+                    stringList2.remove(index);
+                }
+            } else if (stringList2.indexOf("+") != -1) {
+                int index = stringList2.indexOf("+");
+                result = Double.valueOf(stringList2.get(index - 1)) + Double.valueOf(stringList2.get(index + 1));
+                stringList2.add(index - 1, String.valueOf(result));
+                stringList2.remove(index + 2);
+                stringList2.remove(index + 1);
+                stringList2.remove(index);
+            }
+
+            if ((stringList2.indexOf("*") == -1) && (stringList2.indexOf("/") == -1) && (stringList2.indexOf("+") == -1) && (stringList2.indexOf("-") == -1)) {
+                return result;
+            }
+        }
+        return Double.valueOf(stringList2.get(0));
+    }
 }
